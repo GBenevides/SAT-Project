@@ -1,6 +1,38 @@
 from z3 import Solver, Int, Or, Distinct, sat
 import time
 
+def convertInput(inputGrid):
+	normalized = ""
+	matrix = [[0]*9 for i in range(9)]
+	for element in inputGrid:	
+		matrix[element[0]-1][element[1]-1] = element[2]
+	for i in range(0,9):
+		for j in range(0,9):
+			current = matrix[i][j]
+			if current == 0:				
+				normalized = normalized +'.'
+			else:
+				normalized = normalized + str(current)
+	assert len(normalized) == 81
+	return normalized
+
+#Examples of inputs
+format1_1 = [(1,1,2), (1,2,9), (1,4,3), (1,6,8), (2,3,6), (2,4,4), (2,8,5), (3,4,7), (3,8,9), (4,3,1), (4,9,8), (5,1,7),(5,5,9) ,(5,7,3), (6,1,3), (6,9,5), (7,6,2), (7,9,6), (8,2,8), (8,5,1), (8,7,5) ,(9,1,5), (9,2,2), (9,5,8)]
+format1_2 = [(1,4,2), (1,5,6), (1,7,7), (1,9,1), (2,1,6),(2,2,8),(2,5,7),(1,8,9) ]
+format1_3 = [(1,4,2), (1,5,6), (1,7,7), (1,9,1), (2,1,6),(2,2,8),(2,5,7),(2,8,9), (3,1,1), (3,2,9),(3,6,4),(3,7,5)]
+
+format2_1  = '..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..'
+format2_2  = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......'
+format2_3  = '.....6....59.....82....8....45........3........6..3.54...325..6..................'
+
+
+grid = convertInput(format1_1)
+
+print('Input provided: ')
+print(grid)
+
+
+#Construction of Sudoku structure
 def crossedProduct(A,B):
 	return[a+b for a in A for b in B]
 
@@ -39,6 +71,8 @@ voisins = dict((s, set(sum(units[s],[]))-set([s]))  for s in squares)
 #print("voisins list: ")
 #print (voisins['A1'])
 
+
+#Unit tests
 def tests():    
     assert (len(squares) == 81)
     assert len(allUnits) == 27
@@ -51,22 +85,8 @@ def tests():
 
 tests()
 
-def convertInput(inputGrid):
-	normalized = ""
-	matrix = [[0]*9 for i in range(9)]
-	for element in inputGrid:	
-		matrix[element[0]-1][element[1]-1] = element[2]
-	for i in range(0,9):
-		for j in range(0,9):
-			current = matrix[i][j]
-			if current == 0:				
-				normalized = normalized +'.'
-			else:
-				normalized = normalized + str(current)
-	assert len(normalized) == 81
-	return normalized
 
-
+# Functionality
 def parseGrid(grid):
 	if any(element not in "123456789." for element in grid):
 		raise Exception("input not valid")
@@ -116,12 +136,15 @@ def solve(grid):
 	return values
 
 
-#This function will take a sudoku puzzle in string format anc convert it to Matrix 9x9 structure
+#This function will take a sudoku puzzle in dictionary format and convert it back to Matrix 9x9 structure
 def constructMatrix(entry):
 	matrix = [[0]*9 for i in range(9)]
 	str = ''
-	for key in entry:		
-		str = str+entry[key]		
+	for key in entry:
+		if entry[key] == '.':
+			entry[key] = '0'
+		next = entry[key]		
+		str = str + next	
 	for i in range(0,9):
 		for j in range(0,9):
 			matrix[i][j] = str[0] 
@@ -129,32 +152,18 @@ def constructMatrix(entry):
 	return matrix
 
 def printResult(values):
+	matrix = constructMatrix(values)
 	for i in range(0,9):
-		print(constructMatrix(values)[i])
+		print(matrix[i])
 
 
+#values = parseGrid(grid)
+#printResult(values)
 
-#Examples of runs
-davidGrid = [(1,1,2), (1,2,9), (1,4,3), (1,6,8), (2,3,6), (2,4,4), (2,8,5), (3,4,7), (3,8,9), (4,3,1), (4,9,8), (5,1,7),(5,5,9) ,(5,7,3), (6,1,3), (6,9,5), (7,6,2), (7,9,6), (8,2,8), (8,5,1), (8,7,5) ,(9,1,5), (9,2,2), (9,5,8)]
-otherGrid = [(1,4,2), (1,5,6), (1,7,7), (1,9,1), (2,1,6),(2,2,8),(2,5,7),(1,8,9) ]
-otherGrid2 = [(1,4,2), (1,5,6), (1,7,7), (1,9,1), (2,1,6),(2,2,8),(2,5,7),(2,8,9), (3,1,1), (3,2,9),(3,6,4),(3,7,5)]
-
-grid1  = '..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..'
-grid2  = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......'
-hard1  = '.....6....59.....82....8....45........3........6..3.54...325..6..................'
-
-grid = convertInput(davidGrid)
-
-print('Grid: ')
-print(grid)
-print()
-values = parseGrid(grid)
+#Finally solving the puzzle
 start = time.time()
 res = solve(grid)
 end = time.time()-start
+
 printResult(res)
-print('Puzzle solved in: ', end, ' ms' )
-
-
-
-#https://github.com/ppmx/sudoku-solver/blob/master/sudoku-z3.py
+print('Puzzle solved in: ', end, ' s?' )
