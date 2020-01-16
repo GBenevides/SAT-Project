@@ -75,6 +75,8 @@ Represents the following board configuratio:
 ['6', '9', '5', '4', '1', '7', '3', '8', '2']
 ```
 
-  The input should be set at the first lines of the satSudoku.py file. The internal processing of the puzzle is done in the second format, so if an input configuration is provided in the first format, the function __convertInput(grid)__ should be used. At the end of each run, the console will print out the solution, if there is one, in the form of a 9x9 Matrix. In addition it will inform the time took to solve the puzzle, given in miliseconds. 
+ The input should be set at the first lines of the satSudoku.py file. The internal processing of the puzzle is done in the second format, so if an input configuration is provided in the first format, the function __convertInput(grid)__ should be used. At the end of each run, the console will print out the solution, if there is one, in the form of a 9x9 Matrix. In addition it will inform the time took to solve the puzzle, given in miliseconds. 
 
-  Finally, the SAT solver uses functions from the Z3-Solver library available [here](https://github.com/Z3Prover/z3). Moreover, the structure of the Sudoku game constructed in Python was inspired by partially inspired by this [tutorial](https://norvig.com/sudoku.html) online. 
+ Finally, the SAT solver uses functions from the Z3-Solver library available [here](https://pypi.org/project/z3-solver/). Moreover, the structure of the Sudoku game constructed in Python was partially inspired by this [tutorial](https://norvig.com/sudoku.html) available online. 
+
+ Thank you for your attention. 

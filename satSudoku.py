@@ -1,3 +1,6 @@
+#### SAT Project - MOSIG M2 - AISSE - 2019/20
+#### GABRIEL BENEVIDES
+
 from z3 import Solver, Int, Or, Distinct, sat
 import time
 
@@ -48,7 +51,10 @@ setVoisins = [crossedProduct(rows,cols) for rows in ('ABC','DEF','GHI') for cols
 
 allUnits = setRows + setColumns + setVoisins
 
-# A collection of nine squares (column, row, or box) a unit and the squares that share a unit the voisins.
+units = dict((s, [u for u in allUnits if s in u]) for s in squares)
+voisins = dict((s, set(sum(units[s],[]))-set([s]))  for s in squares)
+
+# A collection of nine squares (column, row, or box) is a unit and the squares that share a unit are the voisins.
 
 #print("Set of rows: ")
 #print (setRows)
@@ -62,8 +68,6 @@ allUnits = setRows + setColumns + setVoisins
 #print("All units list: ")
 #print (allUnits)
 
-units = dict((s, [u for u in allUnits if s in u]) for s in squares)
-voisins = dict((s, set(sum(units[s],[]))-set([s]))  for s in squares)
 
 #print("\n\nUnits list: ")
 #print (units['A1'])
@@ -166,4 +170,4 @@ res = solve(grid)
 end = time.time()-start
 
 printResult(res)
-print('Puzzle solved in: ', end, ' s?' )
+print('Puzzle solved in: ', "{0:.4f}".format(end), 'seconds' )
