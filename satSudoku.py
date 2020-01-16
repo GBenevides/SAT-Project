@@ -4,21 +4,6 @@
 from z3 import Solver, Int, Or, Distinct, sat
 import time
 
-def convertInput(inputGrid):
-	normalized = ""
-	matrix = [[0]*9 for i in range(9)]
-	for element in inputGrid:	
-		matrix[element[0]-1][element[1]-1] = element[2]
-	for i in range(0,9):
-		for j in range(0,9):
-			current = matrix[i][j]
-			if current == 0:				
-				normalized = normalized +'.'
-			else:
-				normalized = normalized + str(current)
-	assert len(normalized) == 81
-	return normalized
-
 #Examples of inputs
 format1_1 = [(1,1,2), (1,2,9), (1,4,3), (1,6,8), (2,3,6), (2,4,4), (2,8,5), (3,4,7), (3,8,9), (4,3,1), (4,9,8), (5,1,7),(5,5,9) ,(5,7,3), (6,1,3), (6,9,5), (7,6,2), (7,9,6), (8,2,8), (8,5,1), (8,7,5) ,(9,1,5), (9,2,2), (9,5,8)]
 format1_2 = [(1,4,2), (1,5,6), (1,7,7), (1,9,1), (2,1,6),(2,2,8),(2,5,7),(1,8,9) ]
@@ -29,7 +14,31 @@ format2_2  = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..
 format2_3  = '.....6....59.....82....8....45........3........6..3.54...325..6..................'
 
 
-grid = convertInput(format1_1)
+#Here we can provide our own input puzzle or use one of the examples
+inputGrid = format2_3 
+
+def convertInput(inputGrid):
+
+	if type(inputGrid) == type('string'):
+		return inputGrid #Nothing is done, input is already in string format
+	else:
+		normalized = ""
+		matrix = [[0]*9 for i in range(9)]
+		for element in inputGrid:	
+			matrix[element[0]-1][element[1]-1] = element[2]
+		for i in range(0,9):
+			for j in range(0,9):
+				current = matrix[i][j]
+				if current == 0:				
+					normalized = normalized +'.'
+				else:
+					normalized = normalized + str(current)
+		assert len(normalized) == 81
+		return normalized # We return the normalized input
+
+
+# We must assign input to 'grid' variable inside the convert function, to be sure we'll have the correct format for processing
+grid = convertInput(inputGrid)
 
 print('Input provided: ')
 print(grid)
@@ -76,7 +85,7 @@ voisins = dict((s, set(sum(units[s],[]))-set([s]))  for s in squares)
 #print (voisins['A1'])
 
 
-#Unit tests
+#A few unit tests
 def tests():    
     assert (len(squares) == 81)
     assert len(allUnits) == 27
@@ -89,14 +98,13 @@ def tests():
 
 tests()
 
-
 # Functionality
 def parseGrid(grid):
 	if any(element not in "123456789." for element in grid):
 		raise Exception("input not valid")
 	elements = crossedProduct("ABCDEFGHI", "123456789")
 	values = {e: v for e,v in zip(elements, grid)}
-	return values #We return the dictionary of values
+	return values #We return the dictionary of values, for instance: {'A1', 0}
 
 
 def solve(grid):
@@ -110,7 +118,6 @@ def solve(grid):
 	#Each square should have a value in the interval [1,9]
 	for element in symbols.values():
 		s.add(Or([element == i for i in range(1, 10)]))
-
 
 	#Then every row should cover every value
 	for row in "ABCDEFGHI":
